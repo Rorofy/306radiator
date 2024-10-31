@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+from sys import *
+from src import matrixf as m
+from src import vectorf as v
+
+
+def printError(str):
+    print(str)
+    exit(84)
+
+
+A_matrix = list()
+X_vector = list()
+X_res = list()
+const_h = 0.25
+const_f = -300
+size = 0
+i_radiator = 0
+j_radiator = 0
+i_point = 0
+j_point = 0
+
+
+def initCalcVars(list_arg, mode1):
+    global mode
+    mode = mode1
+    global size
+    size = list_arg[0]
+    global i_radiator, j_radiator, i_point, j_point, A_matrix, X_vector, X_res
+    i_radiator = list_arg[1]
+    j_radiator = list_arg[2]
+    if not mode:
+        i_point = list_arg[3]
+        j_point = list_arg[4]
+    if size <= 0:
+        printError("The size of the room must be greater than 0.")
+    elif (i_radiator < 1 or i_radiator > size - 2) or (j_radiator < 1 or j_radiator > size - 2):
+        printError(
+            "The coordinates of the radiator must be between 0 and %s." %
+            (size - 2))
+    elif (mode == False and ((i_point < 1 or i_point > size - 2) or (j_point < 1 or j_point > size - 2))):
+        printError(
+            "The coordinates of the point in the room must be between 0 and %s." %
+            size)
+
+
+def handler():
+    if (len(argv) == 1):
+        exit(84)
+    if (argv[1] == "-h"):
+        exit(0)
+
+
+def argList(g_list: list):
+    if len(argv) == 4 or len(argv) == 6:
+        g_list = []
+        try:
+            for i in range(1, len(argv)):
+                g_list.append(int(argv[i]))
+        except BaseException:
+            exit(84)
+    else:
+        exit(84)
+    return g_list
+
+
+def main():
+    handler()
+    g_list = []
+    g_list = argList(g_list)
+    if (len(argv) == 4):
+        initCalcVars(g_list, True)
+    else:
+        initCalcVars(g_list, False)
+    m.matrixCreate(size, A_matrix, const_h, const_f)
+    v.vectorCreate(size, i_radiator, j_radiator, X_vector, const_f)
+    if (len(argv) == 4):
+        m.matrixPrint(size, A_matrix)
+        print("")
+    v.vectorCalc(A_matrix, X_vector)
+    v.vectorPrint(mode, i_point, j_point, size)
+
+
+main()
